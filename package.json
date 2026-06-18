@@ -10,6 +10,7 @@
     "build:core": "pnpm --filter @sift/core build",
     "build:extension": "pnpm --filter @sift/extension build",
     "build:standalone": "pnpm --filter @sift/standalone build",
+    "zip:extension": "pnpm --filter @sift/extension zip",
     "dev:standalone": "pnpm --filter @sift/standalone dev",
     "dev:extension": "pnpm --filter @sift/extension dev",
     "test": "pnpm --filter @sift/core test",
