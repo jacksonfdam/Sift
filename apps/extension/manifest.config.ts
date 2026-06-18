@@ -29,12 +29,13 @@ export default defineManifest({
   content_security_policy: {
     extension_pages: "script-src 'self'; object-src 'self'; connect-src 'none'",
   },
-  // Firefox / AMO: Manifest V3 requires an explicit add-on id.
-  // (data_collection_permissions is rejected as "reserved" by the current
-  // addons-linter, so it is intentionally omitted until Mozilla enables it.)
+  // Firefox / AMO: Manifest V3 requires an explicit add-on id, and new
+  // submissions must declare data collection. Sift collects nothing, so
+  // `required: ["none"]` is the correct (and honest) value.
   browser_specific_settings: {
     gecko: {
       id: "sift@siftext.vercel.app",
+      data_collection_permissions: { required: ["none"] },
     },
   },
 } as Parameters<typeof defineManifest>[0]);
