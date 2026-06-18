@@ -1,0 +1,25 @@
+{
+  "name": "@sift/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sift MV3 extension — registers a DevTools panel hosting the capture viewer.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@sift/core": "workspace:*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "2.6.1",
+    "@types/chrome": "0.0.280",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.3",
+    "vite": "5.4.10"
+  }
+}

@@ -1,0 +1,18 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { crx } from "@crxjs/vite-plugin";
+import manifest from "./manifest.config.js";
+
+export default defineConfig({
+  plugins: [react(), crx({ manifest })],
+  build: {
+    target: "es2022",
+    rollupOptions: {
+      input: {
+        devtools: "src/devtools.html",
+        panel: "src/panel.html",
+      },
+    },
+  },
+  server: { port: 5174 },
+});
