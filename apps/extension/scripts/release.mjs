@@ -79,7 +79,13 @@ if (dryRun) {
 }
 
 const dirty = cap("git", ["status", "--porcelain"]);
-if (dirty) fail("working tree is not clean. Commit or stash your changes first.");
+if (dirty) {
+  fail(
+    "working tree is not clean. Commit or stash these first:\n" +
+      dirty.replace(/^/gm, "  ") +
+      "\n(the only change a release should commit is the version bump.)",
+  );
+}
 cap("gh", ["auth", "status"]); // throws if not logged in
 
 // ---- set version, build, pack ----
