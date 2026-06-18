@@ -39,6 +39,12 @@ jobs:
           fi
           pnpm zip:extension
 
+      # Validate the built extension against Mozilla's addons-linter (AMO).
+      # Fails the job on errors; the known non-blocking innerHTML warnings from
+      # the bundled React runtime do not fail it.
+      - name: Lint for AMO
+        run: pnpm --filter @sift/extension lint:amo
+
       - name: Upload zip artifact
         uses: actions/upload-artifact@v4
         with:

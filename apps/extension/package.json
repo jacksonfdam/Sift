@@ -10,6 +10,7 @@
     "version:set": "node scripts/version.mjs",
     "zip": "node scripts/version.mjs && pnpm build && node scripts/pack.mjs",
     "release": "node scripts/release.mjs",
+    "lint:amo": "npx --yes addons-linter@7 dist",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
