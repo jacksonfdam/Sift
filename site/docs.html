@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sift — documentation</title>
+    <meta name="description" content="How to install and use Sift, the read-only HTTP capture viewer." />
+    <link rel="icon" href="assets/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark"></span> Sift</a>
+        <nav>
+          <a href="index.html">Overview</a>
+          <a href="docs.html">Docs</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="doc wrap legal">
+      <h1>Documentation</h1>
+      <p>Sift is a read-only viewer for HTTP session captures. It opens HAR, Fiddler SAZ, and Charles files, parses them in memory, and renders a request and response inspector. It does not capture traffic, proxy, intercept, or modify anything.</p>
+
+      <div class="toc">
+        <h2>On this page</h2>
+        <ul>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#open">Opening a capture</a></li>
+          <li><a href="#formats">Supported formats</a></li>
+          <li><a href="#inspector">The inspector</a></li>
+          <li><a href="#redaction">Redaction</a></li>
+          <li><a href="#export">Sanitized export</a></li>
+          <li><a href="#search">Search and filters</a></li>
+          <li><a href="#limits">Limitations</a></li>
+          <li><a href="#build">Build from source</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <h2 id="install">Install</h2>
+      <h3>As a Chrome DevTools panel</h3>
+      <p>Sift is a Manifest V3 extension that adds a DevTools panel. It targets Chrome 110 and later. Until it is on the Chrome Web Store, load it unpacked:</p>
+      <ol>
+        <li>Build the extension (see <a href="#build">Build from source</a>), which produces <code>apps/extension/dist/</code>.</li>
+        <li>Open <code>chrome://extensions</code> and enable <strong>Developer mode</strong>.</li>
+        <li>Click <strong>Load unpacked</strong> and select the <code>apps/extension/dist</code> folder.</li>
+        <li>Open DevTools (<code>F12</code> or <code>Cmd+Option+I</code>) and find the <strong>Sift</strong> panel.</li>
+      </ol>
+      <div class="note">There is no toolbar popup. Clicking the extension icon does nothing by design; the interface lives only inside DevTools.</div>
+
+      <h3>As an offline page</h3>
+      <p>The same viewer ships as a single self-contained HTML file. Build it and open <code>apps/standalone/dist/index.html</code> directly in any browser. It runs fully offline and requests no permissions.</p>
+
+      <h2 id="open">Opening a capture</h2>
+      <p>Drag one or more capture files onto the panel, or use the file picker. Multiple files merge into one list, tagged by source. Nothing is written to disk; reloading the page clears everything.</p>
+
+      <h2 id="formats">Supported formats</h2>
+      <table>
+        <thead><tr><th>Format</th><th>Extension</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>HAR</td><td><code>.har</code></td><td>HTTP Archive JSON. Handles base64 bodies, form params, and redirect chains.</td></tr>
+          <tr><td>Fiddler SAZ</td><td><code>.saz</code></td><td>A ZIP, unzipped in memory. Encrypted archives are detected and refused.</td></tr>
+          <tr><td>Charles</td><td><code>.xml</code>, <code>.trace</code></td><td>Session exports, parsed defensively across Charles versions.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="inspector">The inspector</h2>
+      <p>The left pane is a virtualized request list with columns for method, status (colored by class), host, path, response type, size, and duration. Arrow keys, or <code>j</code> and <code>k</code>, move the selection.</p>
+      <p>The right pane has tabs:</p>
+      <ul>
+        <li><strong>Headers</strong> — request and response headers, grouped.</li>
+        <li><strong>Query</strong> — parsed query-string parameters.</li>
+        <li><strong>Cookies</strong> — request cookies and response Set-Cookie, with attributes.</li>
+        <li><strong>Request body</strong> and <strong>Response body</strong> — pretty-printed and syntax-highlighted for JSON, XML, HTML, CSS, and JavaScript.</li>
+        <li><strong>Timing</strong> — phase timings when the capture includes them.</li>
+      </ul>
+      <p>Bodies larger than 512 KB wait behind a "render anyway" control so a single response cannot freeze the panel.</p>
+
+      <h2 id="redaction">Redaction</h2>
+      <p>Sensitive values are masked by default: Authorization and Proxy-Authorization headers, Cookie and Set-Cookie, common API-key header patterns, all cookie values, and token-shaped query parameters. Click a masked value to reveal that one, or use <strong>Reveal all</strong> to toggle everything. The same policy drives both the on-screen masking and the sanitized export, so they cannot disagree.</p>
+
+      <h2 id="export">Sanitized export</h2>
+      <p><strong>Export sanitized HAR</strong> rebuilds a valid HAR file with every sensitive value replaced by <code>[REDACTED]</code>. This lets you share a capture without sharing your credentials. It is the only file Sift produces, and only as a download you start. Nothing is written automatically.</p>
+
+      <h2 id="search">Search and filters</h2>
+      <p>The search box matches free text across URL, request and response headers, and body text. Quick filters narrow the list by method, status class (2xx through 5xx), host, and response MIME type. Filters and search combine.</p>
+
+      <h2 id="limits">Limitations</h2>
+      <ul>
+        <li>Brotli (<code>br</code>) response bodies are not decoded; they are shown as bytes with a "not decoded" badge.</li>
+        <li>Encrypted or password-protected SAZ archives are refused with a clear message rather than guessed at.</li>
+        <li>Charles <code>.chls</code> and <code>.tcpsf</code> (Java serialization) and packet captures (pcap/pcapng) are not supported.</li>
+        <li>There is no live capture. Sift views files you already have.</li>
+      </ul>
+
+      <h2 id="build">Build from source</h2>
+      <p>The project is a pnpm monorepo. With Node and pnpm installed:</p>
+      <pre><code>pnpm install
+pnpm test               # parser, redaction, and search tests
+pnpm build              # build core, extension, and standalone
+pnpm build:extension    # extension only, output in apps/extension/dist
+pnpm build:standalone   # standalone HTML, output in apps/standalone/dist
+pnpm verify             # build, test, and prove zero network egress</code></pre>
+      <p>To package the extension for the Chrome Web Store:</p>
+      <pre><code>pnpm zip:extension                      # bump patch, build, zip
+SIFT_VERSION=1.4.0 pnpm zip:extension   # pin an exact version</code></pre>
+
+      <h2 id="faq">FAQ</h2>
+      <h3>Does anything get uploaded or saved?</h3>
+      <p>No. Captures are parsed in memory and discarded. There is no storage and no network access. See the <a href="privacy.html">privacy policy</a>.</p>
+      <h3>Why does clicking the extension icon do nothing?</h3>
+      <p>Sift is a DevTools panel, not a popup. Open DevTools and select the Sift tab.</p>
+      <h3>I switched tabs and my capture disappeared.</h3>
+      <p>That is intentional. Sift clears parsed data when the page is hidden or reloaded, as part of its memory hygiene. Drop the file again.</p>
+      <h3>Can it capture live traffic?</h3>
+      <p>Not in this version. Sift only views capture files you provide.</p>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark"></span> Sift</a>
+        <nav>
+          <a href="index.html">Overview</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
