@@ -9,7 +9,8 @@ renders a request/response inspector. Nothing is written to disk. Nothing is
 sent anywhere. If that sounds unambitious, good. Ambition is how capture tools
 end up with a cloud account.
 
-Site: https://siftext.vercel.app. Source: https://github.com/jacksonfdam/Sift.
+Use it online (no install): https://siftext.vercel.app/app. Site:
+https://siftext.vercel.app. Source: https://github.com/jacksonfdam/Sift.
 
 ## The guarantees, which are the point
 

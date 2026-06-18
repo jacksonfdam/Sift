@@ -11,6 +11,11 @@ pnpm dev:standalone          # dev server with HMR
 pnpm build:standalone        # emits dist/index.html, everything inlined
 ```
 
+It is also hosted online at https://siftext.vercel.app/app, which is this same
+self-contained page served over HTTPS. The Vercel build assembles it there via
+[`scripts/build-site.mjs`](../../scripts/build-site.mjs); captures opened there
+are still parsed only in the browser.
+
 Open `dist/index.html`, or double-click it, and drop a capture. That is the
 install procedure. There isn't more.
 
