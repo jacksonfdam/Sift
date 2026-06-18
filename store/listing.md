@@ -176,10 +176,9 @@ Then check the three certifications in the form:
 ### Privacy policy URL
 
 ```
-https://<your-vercel-domain>/privacy
+https://siftext.vercel.app/privacy
 ```
 
 The privacy policy is hosted from this repository's `site/` folder, deployed to
 Vercel with clean URLs enabled, so `site/privacy.html` is served at `/privacy`.
-Paste the live public URL (your custom domain, or the
-`https://<project>.vercel.app/privacy` URL Vercel assigns) into this field.
+The source repository is https://github.com/jacksonfdam/Sift.

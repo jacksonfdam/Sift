@@ -35,9 +35,9 @@ build step.
   Chrome Web Store privacy-policy field.
 - Or from the CLI: `cd site && npx vercel deploy --prod`.
 
-After the first deploy, the privacy policy lives at
-`https://<your-domain>/privacy` (or `https://<project>.vercel.app/privacy`).
-Paste that URL into the store listing's Privacy policy field.
+The site is deployed at `https://siftext.vercel.app`, so the privacy policy
+lives at `https://siftext.vercel.app/privacy`. That is the URL to paste into the
+store listing's Privacy policy field.
 
 ## Deploy elsewhere
 
