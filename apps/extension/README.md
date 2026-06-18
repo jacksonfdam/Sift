@@ -101,10 +101,14 @@ exists.
 
 ## Firefox / AMO
 
-The same build uploads to addons.mozilla.org. Manifest V3 there requires an
-explicit add-on id, set in `browser_specific_settings.gecko.id`
-(`sift@siftext.vercel.app`). Without it, AMO fails validation with "The add-on
-ID is required in Manifest Version 3 and above".
+The same build uploads to addons.mozilla.org. Manifest V3 there needs two keys
+under `browser_specific_settings.gecko`:
+
+- `id` (`sift@siftext.vercel.app`). Without it, AMO fails with "The add-on ID is
+  required in Manifest Version 3 and above".
+- `data_collection_permissions`. New Firefox submissions must declare what data
+  they collect; Sift collects nothing, so it is `{ "required": ["none"] }`.
+  Without it, current AMO fails with a missing-data-collection error.
 
 Validate locally before submitting:
 
@@ -113,7 +117,7 @@ pnpm --filter @sift/extension build
 pnpm --filter @sift/extension lint:amo
 ```
 
-That runs Mozilla's `addons-linter` against `dist/`. Expect **0 errors**. Two
+That runs Mozilla's `addons-linter@10` against `dist/`. Expect **0 errors**. Two
 non-blocking `UNSAFE_VAR_ASSIGNMENT` (innerHTML) warnings remain; they come from
 inside the bundled React runtime, not from Sift (our code never assigns
 `innerHTML`, the highlighter renders escaped nodes). The same check runs in CI
@@ -123,9 +127,10 @@ Notes:
 
 - `minimum_chrome_version` is a Chrome-only key. The linter ignores it; it does
   not block AMO.
-- `data_collection_permissions` is intentionally omitted. The current
-  `addons-linter` rejects it as a reserved property; add it once Mozilla enables
-  it for extensions.
+- Pin the linter to a current major (`@10`). `addons-linter@7` does the opposite
+  of `@10` on data collection: 7 rejects `data_collection_permissions` as
+  reserved, 10 requires it. Submitting against the wrong assumption is how a
+  green local check still fails on AMO.
 - AMO refuses a re-upload of an existing version, so bump before each
   submission. `pnpm release:extension` does that (it bumps the patch).
 
