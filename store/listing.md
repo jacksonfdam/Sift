@@ -127,3 +127,59 @@ Sift is an independent tool. It is not affiliated with, endorsed by, or
 sponsored by the makers of Fiddler or Charles, or by Google. "Fiddler" and
 "Charles" are trademarks of their respective owners and are referenced only to
 describe the capture file formats that Sift can open. HAR is an open format.
+
+## Chrome Web Store — Privacy tab (copy-paste blocks)
+
+Each block below maps to a field in the dashboard's Privacy tab and stays under
+that field's 1,000-character limit.
+
+### Single purpose
+
+```
+Sift is a read-only viewer for HTTP capture files. It opens HAR, Fiddler SAZ, and Charles (.xml/.trace) session exports, parses them entirely in memory, and displays them as a navigable request/response inspector inside Chrome DevTools. It does not capture, proxy, intercept, decrypt, or modify network traffic. Every feature — the request list, the header/query/cookie/body/timing detail tabs, default masking of secrets, search and filtering, and sanitized HAR export — exists only to help you view a capture file you already have.
+```
+
+### Permission justifications
+
+```
+None to provide. The manifest declares no "permissions" and no optional permissions, so the Privacy tab shows no permission-justification fields. The only manifest key that integrates with the browser is "devtools_page", which registers the Sift DevTools panel. It grants no access to page content, tabs, cookies, storage, or network data; it only adds a panel. If a reviewer asks, that is the sole reason it is present.
+```
+
+### Host permission justification
+
+```
+None to provide. The manifest declares no "host_permissions" and contains no content scripts, so there are no match patterns to justify. Sift never reads, modifies, or accesses any website, tab, or network request, and has no access to the pages you browse. No host is used for tracking, analytics, or any other purpose, because no host permission is requested at all.
+```
+
+### Are you using remote code?
+
+```
+No. Sift executes no remote code. All scripts are bundled inside the extension package. There are no remote <script> tags, no eval, and no code fetched from any URL. The content security policy for extension pages is "script-src 'self'; object-src 'self'; connect-src 'none'", which forbids remote scripts and eval and blocks outbound network connections. This was verified against the source and the built bundle.
+```
+
+### Data usage
+
+```
+Data collected or transmitted: none. Sift does not collect or transmit any of Chrome's data categories: not personally identifiable information, health, financial, authentication, personal communications, location, web history, user activity, or website content. Capture files you open are parsed in memory and discarded on reload; no storage APIs (localStorage, sessionStorage, chrome.storage, IndexedDB, Cache API) and no network are used. The only output is a sanitized HAR export, which is a local download you start. The capture's contents stay on your device.
+```
+
+Then check the three certifications in the form:
+
+```
+[x] I do not sell or transfer user data to third parties, apart from the approved use cases.
+[x] I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
+[x] I do not use or transfer user data to determine creditworthiness or for lending purposes.
+```
+
+(All three are accurate because no user data is collected or transferred at all.)
+
+### Privacy policy URL
+
+```
+https://<your-vercel-domain>/privacy
+```
+
+The privacy policy is hosted from this repository's `site/` folder, deployed to
+Vercel with clean URLs enabled, so `site/privacy.html` is served at `/privacy`.
+Paste the live public URL (your custom domain, or the
+`https://<project>.vercel.app/privacy` URL Vercel assigns) into this field.
