@@ -53,6 +53,24 @@ and a fixed timestamp, so packing the same version twice gives byte-identical
 archives. Upload that file by hand at the Web Store developer dashboard, or let
 CI do it. Remember to commit the bumped `package.json`.
 
+## Cutting a release
+
+`release:extension` does the whole thing in one command: it picks a version,
+builds, zips, commits the bump, tags `vX.Y.Z`, pushes, and creates a GitHub
+Release with the zip attached.
+
+```sh
+pnpm release:extension                      # bump patch, tag, release
+SIFT_VERSION=1.4.0 pnpm release:extension   # release an exact version
+pnpm release:extension --dry-run            # print the plan, change nothing
+```
+
+It needs the [GitHub CLI](https://cli.github.com) (`gh`) authenticated and an
+`origin` remote, and it refuses to run on a dirty tree (the only change it
+commits is the version bump). Pushing the tag also triggers the workflow below,
+so the GitHub Release carries the asset and CI handles the store publish. Always
+do a `--dry-run` first; tags and releases are awkward to walk back.
+
 ## Publishing automatically
 
 [`.github/workflows/release-extension.yml`](../../.github/workflows/release-extension.yml)

@@ -50,8 +50,6 @@ try {
 } catch {
   fail("the GitHub CLI (gh) is not installed. See https://cli.github.com");
 }
-const dirty = cap("git", ["status", "--porcelain"]);
-if (dirty) fail("working tree is not clean. Commit or stash your changes first.");
 
 // ---- resolve version (read-only for the plan) ----
 const pkgPath = join(pkgDir, "package.json");
@@ -80,6 +78,8 @@ if (dryRun) {
   process.exit(0);
 }
 
+const dirty = cap("git", ["status", "--porcelain"]);
+if (dirty) fail("working tree is not clean. Commit or stash your changes first.");
 cap("gh", ["auth", "status"]); // throws if not logged in
 
 // ---- set version, build, pack ----
