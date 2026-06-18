@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sift — privacy-first HTTP capture viewer</title>
+    <meta
+      name="description"
+      content="Sift is a read-only, in-memory viewer for HAR, Fiddler SAZ, and Charles HTTP captures. Nothing is uploaded, nothing is saved."
+    />
+    <link rel="icon" href="assets/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark"></span> Sift</a>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#formats">Formats</a>
+          <a href="#use">How to use</a>
+          <a href="docs.html">Docs</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" style="border-bottom: none;">
+        <div class="wrap">
+          <h1>Read a capture. Nothing else.</h1>
+          <p class="tagline">
+            Sift is a read-only viewer for HTTP session captures: HAR, Fiddler
+            SAZ, and Charles. It parses the file entirely in your browser and
+            never uploads or saves anything.
+          </p>
+          <p class="sub">
+            Drag a capture onto the panel and get a navigable request and
+            response inspector. No proxy, no interception, no account.
+          </p>
+          <div class="cta">
+            <a class="btn primary" href="docs.html#install">Install</a>
+            <a class="btn" href="docs.html">Read the docs</a>
+          </div>
+          <div class="preview">
+            <img src="assets/inspector.png" alt="The Sift inspector showing a request list and a detail pane with masked headers." />
+          </div>
+        </div>
+      </section>
+
+      <section id="what">
+        <div class="wrap">
+          <h2>What it is</h2>
+          <p class="lead">
+            A capture file lands in your inbox or your downloads folder, and you
+            need to read it. Sift opens it locally and shows you the requests and
+            responses in a dense, keyboard-navigable inspector. When you close
+            the panel or reload, the data is gone. There is nothing to clean up,
+            because nothing was kept.
+          </p>
+        </div>
+      </section>
+
+      <section id="features">
+        <div class="wrap">
+          <h2>Features</h2>
+          <p class="lead">Everything operates on one internal model, so the inspector behaves the same whatever format you opened.</p>
+          <div class="grid">
+            <div class="card">
+              <span class="tag">inspect</span>
+              <h3>Two-pane inspector</h3>
+              <p>A virtualized request list and a detail pane with tabs for headers, query, cookies, request and response bodies, and timing. Stays fast on captures with thousands of requests.</p>
+            </div>
+            <div class="card">
+              <span class="tag">redact</span>
+              <h3>Secrets masked by default</h3>
+              <p>Authorization headers, cookies, Set-Cookie, common API-key headers, and token-shaped query parameters are hidden until you click to reveal one, or reveal all.</p>
+            </div>
+            <div class="card">
+              <span class="tag">highlight</span>
+              <h3>Readable bodies</h3>
+              <p>JSON, XML, HTML, CSS, and JavaScript bodies are pretty-printed and syntax-highlighted. Large bodies wait behind an explicit control so nothing locks up.</p>
+            </div>
+            <div class="card">
+              <span class="tag">decode</span>
+              <h3>gzip, deflate, chunked</h3>
+              <p>Compressed and chunked response bodies are reassembled for display. Brotli bodies are shown as bytes with a clear "not decoded" badge rather than failing.</p>
+            </div>
+            <div class="card">
+              <span class="tag">export</span>
+              <h3>Sanitized HAR export</h3>
+              <p>Rebuild a valid HAR with every sensitive value replaced by a placeholder, so a capture can be shared without leaking credentials. It is the only file Sift writes.</p>
+            </div>
+            <div class="card">
+              <span class="tag">search</span>
+              <h3>Search and filter</h3>
+              <p>Free-text search across URL, headers, and body, plus quick filters by method, status class, host, and response type.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="formats">
+        <div class="wrap">
+          <h2>Formats it reads</h2>
+          <p class="lead">Three capture formats in, one consistent inspector out.</p>
+          <div class="grid">
+            <div class="card"><h3>HAR (.har)</h3><p>The HTTP Archive JSON format exported by browser developer tools and many HTTP clients.</p></div>
+            <div class="card"><h3>Fiddler (.saz)</h3><p>Fiddler session archives, unzipped and parsed in memory.</p></div>
+            <div class="card"><h3>Charles (.xml, .trace)</h3><p>Charles session exports, parsed defensively across versions.</p></div>
+          </div>
+          <p class="lead" style="margin-top: 20px;">
+            Not supported: Charles <code>.chls</code> and <code>.tcpsf</code>,
+            and packet captures (pcap/pcapng). Export HAR from those tools
+            instead.
+          </p>
+        </div>
+      </section>
+
+      <section id="use">
+        <div class="wrap">
+          <h2>How to use it</h2>
+          <div class="two-col">
+            <div class="card">
+              <span class="tag">DevTools panel</span>
+              <h3>As a Chrome extension</h3>
+              <p>Open Chrome DevTools, select the <strong>Sift</strong> panel, and drop a capture onto it. There is no toolbar popup; the extension exists only as a DevTools panel. See the <a href="docs.html#install">install guide</a>.</p>
+            </div>
+            <div class="card">
+              <span class="tag">Offline page</span>
+              <h3>As a single HTML file</h3>
+              <p>The same viewer ships as one self-contained HTML file you open with <code>file://</code>. It runs fully offline and requests no permissions. Most auditable, zero install.</p>
+            </div>
+          </div>
+          <div class="preview" style="margin-top: 24px;">
+            <img src="assets/response-body.png" alt="The Sift inspector showing a syntax-highlighted JSON response body." />
+          </div>
+        </div>
+      </section>
+
+      <section id="privacy" class="privacy-band">
+        <div class="wrap">
+          <h2>Privacy by construction</h2>
+          <p class="lead">These are not promises in a settings page. They are properties of how the tool is built.</p>
+          <ul>
+            <li><strong>In memory only.</strong> Captures are parsed and discarded. No <code>localStorage</code>, <code>chrome.storage</code>, <code>IndexedDB</code>, or disk.</li>
+            <li><strong>Zero network egress.</strong> No outbound requests of any kind. No telemetry, no analytics, no external services.</li>
+            <li><strong>No remote code.</strong> All code is bundled; a strict content security policy forbids eval and remote scripts.</li>
+            <li><strong>No permissions.</strong> The extension requests no host permissions and no broad permissions. It cannot see your tabs or browsing.</li>
+          </ul>
+          <p class="lead" style="margin-top: 22px;">
+            Read the full <a href="privacy.html">privacy policy</a>.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark"></span> Sift</a>
+        <nav>
+          <a href="docs.html">Docs</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+        <p class="disclaimer">
+          Sift is an independent tool. It is not affiliated with, endorsed by, or
+          sponsored by the makers of Fiddler or Charles, or by Google. "Fiddler"
+          and "Charles" are trademarks of their respective owners, referenced
+          only to describe the formats Sift can open.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
