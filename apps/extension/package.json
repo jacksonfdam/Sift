@@ -9,6 +9,7 @@
     "build": "vite build",
     "version:set": "node scripts/version.mjs",
     "zip": "node scripts/version.mjs && pnpm build && node scripts/pack.mjs",
+    "release": "node scripts/release.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
