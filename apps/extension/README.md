@@ -34,15 +34,24 @@ The Chrome Web Store wants a zip with `manifest.json` at the root, not your
 `dist` folder wrapped in a bow. So:
 
 ```sh
-pnpm zip:extension     # build, then zip dist/ contents to sift-extension-<version>.zip
+pnpm zip:extension                      # bump patch, build, zip
+SIFT_VERSION=1.4.0 pnpm zip:extension   # pin an exact version instead
 ```
+
+The version lives in one place, `apps/extension/package.json`, and the manifest
+reads it from there. `zip:extension` bumps the patch number by default, so each
+package you cut gets a fresh version, which the Web Store requires (it rejects a
+re-upload of an existing version). Pass `SIFT_VERSION=MAJOR.MINOR.PATCH` to set
+an exact one, or run `pnpm --filter @sift/extension version:set 1.4.0` on its
+own. The bump only happens on `zip`; plain `pnpm build:extension` leaves the
+version alone.
 
 The zip lands in `apps/extension/` and is git-ignored, because committing build
 output is how repositories gain weight. The packer uses `fflate` `0.8.2` (a dev
 dependency, the same zero-dependency library the SAZ parser already relies on)
-and a fixed timestamp, so packing the same build twice gives byte-identical
+and a fixed timestamp, so packing the same version twice gives byte-identical
 archives. Upload that file by hand at the Web Store developer dashboard, or let
-CI do it.
+CI do it. Remember to commit the bumped `package.json`.
 
 ## Publishing automatically
 

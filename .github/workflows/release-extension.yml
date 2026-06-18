@@ -30,8 +30,14 @@ jobs:
       - name: Test and verify zero egress
         run: pnpm verify
 
+      # On a vX.Y.Z tag, pin the manifest to the tag (strip the leading "v").
+      # On manual runs there is no tag, so the zip script bumps the patch itself.
       - name: Pack extension
-        run: pnpm zip:extension
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            export SIFT_VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          pnpm zip:extension
 
       - name: Upload zip artifact
         uses: actions/upload-artifact@v4
