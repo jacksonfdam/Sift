@@ -1,34 +1,36 @@
 # @sift/extension
 
-The MV3 browser extension. It registers a **DevTools panel** ("Sift") that
-hosts the drag-and-drop capture viewer.
+The Manifest V3 build. It registers one DevTools panel called "Sift" that hosts
+the drag-and-drop viewer. That is the entire extension. It does not follow you
+around the browser, because it cannot.
 
 ```sh
-pnpm dev:extension     # CRXJS dev build with HMR (load dist/ unpacked)
+pnpm dev:extension     # CRXJS dev build with HMR
 pnpm build:extension   # production build to dist/
 ```
 
-Load `dist/` as an unpacked extension (`chrome://extensions` → Developer mode →
-Load unpacked), then open DevTools → **Sift** tab and drop a capture.
+Load `dist/` unpacked (`chrome://extensions`, Developer mode, Load unpacked),
+open DevTools, find the Sift tab, and drop a capture. Built with
+`@crxjs/vite-plugin` `2.6.1`. Targets Chrome 110 and up.
 
-## Permissions audit
+## The permissions audit, which is short
 
-The manifest requests the absolute minimum:
+The interesting column is the empty one.
 
 | Field | Value | Why |
 | --- | --- | --- |
-| `devtools_page` | `src/devtools.html` | The only capability tied to DevTools; required to register the panel. |
-| `permissions` | *(none)* | The viewer reads dropped files; it needs no Chrome permissions. |
-| `host_permissions` | *(none)* | No network, no page access. |
-| `content_security_policy` | `script-src 'self'; object-src 'self'; connect-src 'none'` | No remote code, no eval, no network egress. |
+| `devtools_page` | `src/devtools.html` | Required to register the panel. The only thing tying Sift to DevTools. |
+| `permissions` | none | The viewer reads files you drop. It needs nothing from Chrome. |
+| `host_permissions` | none | No network, no page access, no opinions about your tabs. |
+| `content_security_policy` | `script-src 'self'; object-src 'self'; connect-src 'none'` | No remote code, no eval, no egress. |
 
 There is no background service worker holding state, no content script, and no
-storage use. All capture state lives in the panel document and is discarded when
-the panel closes or the page reloads.
+storage. Capture state lives in the panel document and dies when you close it.
+An extension with nothing to hide, mostly because it has nothing to keep.
 
-## v2 note (not built)
+## The v2 you will ask about
 
-Live capture will plug into the same `Flow` model via
-`chrome.devtools.network.onRequestFinished` / `getHAR()` (DevTools entries are
-already HAR-shaped). It would add no new host permissions. The current
-architecture does not block it, but it is intentionally out of scope for v1.
+Live capture is not here. When it arrives it will plug into the same `Flow`
+model through `chrome.devtools.network.onRequestFinished` and `getHAR()`, since
+DevTools entries are already HAR shaped. It would add no new permissions. The
+current architecture leaves the door open and the lights off.
