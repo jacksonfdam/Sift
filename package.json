@@ -13,7 +13,9 @@
     "dev:standalone": "pnpm --filter @sift/standalone dev",
     "dev:extension": "pnpm --filter @sift/extension dev",
     "test": "pnpm --filter @sift/core test",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "verify:egress": "node scripts/verify-egress.mjs",
+    "verify": "pnpm build && pnpm test && pnpm verify:egress"
   },
   "devDependencies": {
     "typescript": "5.6.3"

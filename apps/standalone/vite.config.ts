@@ -11,5 +11,9 @@ export default defineConfig({
     assetsInlineLimit: 100_000_000,
     cssCodeSplit: false,
     reportCompressedSize: false,
+    // Everything is inlined into one file, so there is nothing to preload.
+    // Disabling the polyfill removes its (dead) fetch() call, keeping the
+    // "zero network egress" guarantee verifiable by inspecting the bundle.
+    modulePreload: false,
   },
 });
