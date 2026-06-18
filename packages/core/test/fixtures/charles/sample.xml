@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<charles-session>
+  <transaction>
+    <scheme>https</scheme>
+    <host>api.example.com</host>
+    <actualPort>443</actualPort>
+    <path>/v1/users</path>
+    <query>token=eyJabc.def.ghi&amp;page=1</query>
+    <protocolVersion>HTTP/1.1</protocolVersion>
+    <method>GET</method>
+    <status>Complete</status>
+    <responseCode>200</responseCode>
+    <startTime>2026-01-02T10:00:00.000Z</startTime>
+    <request>
+      <header><name>Host</name><value>api.example.com</value></header>
+      <header><name>Authorization</name><value>Bearer sk-live-0123456789abcdef</value></header>
+      <header><name>Accept</name><value>application/json</value></header>
+    </request>
+    <response>
+      <header><name>Content-Type</name><value>application/json; charset=utf-8</value></header>
+      <header><name>Set-Cookie</name><value>session=newvalue789; Path=/; HttpOnly</value></header>
+      <body>
+        <text>{"users":[{"id":1,"name":"Ada"}]}</text>
+      </body>
+    </response>
+  </transaction>
+  <transaction>
+    <scheme>https</scheme>
+    <host>example.com</host>
+    <actualPort>443</actualPort>
+    <path>/old-path</path>
+    <method>GET</method>
+    <responseCode>302</responseCode>
+    <protocolVersion>HTTP/1.1</protocolVersion>
+    <request>
+      <header><name>Host</name><value>example.com</value></header>
+    </request>
+    <response>
+      <header><name>Location</name><value>https://example.com/new-path</value></header>
+    </response>
+  </transaction>
+</charles-session>
