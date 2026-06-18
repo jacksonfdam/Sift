@@ -1,0 +1,64 @@
+name: release-extension
+
+# Builds, verifies, and packs the MV3 extension into a Web Store zip. On a
+# version tag (vX.Y.Z) it also publishes to the Chrome Web Store, but only if
+# the store credentials are configured as repository secrets. Without them the
+# job still runs and uploads the zip as a build artifact.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Test and verify zero egress
+        run: pnpm verify
+
+      - name: Pack extension
+        run: pnpm zip:extension
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sift-extension
+          path: apps/extension/sift-extension-*.zip
+          if-no-files-found: error
+
+      # Only publish when credentials exist. The check exposes a boolean, never
+      # the secret values.
+      - name: Detect store credentials
+        id: creds
+        run: echo "have=${{ secrets.CWS_CLIENT_ID != '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to Chrome Web Store
+        if: steps.creds.outputs.have == 'true' && startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ZIP=$(ls apps/extension/sift-extension-*.zip)
+          npx --yes chrome-webstore-upload-cli@3 upload \
+            --source "$ZIP" \
+            --extension-id "$CWS_EXTENSION_ID" \
+            --client-id "$CWS_CLIENT_ID" \
+            --client-secret "$CWS_CLIENT_SECRET" \
+            --refresh-token "$CWS_REFRESH_TOKEN" \
+            --auto-publish
+        env:
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
