@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "standalone",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@sift/standalone", "dev"],
+      "port": 5173
+    }
+  ]
+}

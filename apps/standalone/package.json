@@ -1,0 +1,25 @@
+{
+  "name": "@sift/standalone",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sift standalone offline page — the full viewer as a single self-contained HTML file.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@sift/core": "workspace:*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.3",
+    "vite": "5.4.10",
+    "vite-plugin-singlefile": "2.0.3"
+  }
+}
