@@ -1,24 +1,31 @@
 # @sift/standalone
 
-The full Sift viewer built as a **single self-contained HTML file**. It opens
-directly with `file://`, runs entirely offline, and requests zero browser
-permissions — making it the most auditable way to ship the tool.
+The whole viewer, built into a single self-contained HTML file by
+`vite-plugin-singlefile`. It opens with `file://`, runs entirely offline, and
+asks for no permissions because there is no one to ask. This is the most
+auditable way to ship the thing, which is a polite way of saying it is the one
+you can actually check.
 
 ```sh
 pnpm dev:standalone          # dev server with HMR
-pnpm build:standalone        # emits dist/index.html (everything inlined)
+pnpm build:standalone        # emits dist/index.html, everything inlined
 ```
 
-Open `dist/index.html` in any browser (or double-click it) and drop a capture.
+Open `dist/index.html`, or double-click it, and drop a capture. That is the
+install procedure. There isn't more.
 
-## Why it's auditable
+## Why it is auditable
 
-- Everything (JS + CSS) is inlined by `vite-plugin-singlefile` into one file —
-  no external requests are possible at runtime.
-- A strict CSP (`connect-src 'none'`, `default-src 'none'`) is declared in the
-  page `<meta>`, so the browser blocks any accidental network access.
-- The page touches no storage APIs (enforced by the core's egress guard test).
+- Everything, JS and CSS, is inlined into one file. There are no external
+  requests at runtime because there is nothing external to request.
+- A strict CSP sits in the page `<meta>`: `default-src 'none'` and
+  `connect-src 'none'`, so the browser blocks network access on principle even
+  if some future bug develops ambitions.
+- `modulePreload` is turned off in the build. A single file has nothing to
+  preload, and disabling it removes Vite's polyfill `fetch` call, so the bundle
+  contains zero egress symbols. The verify script confirms this rather than
+  taking our word for it.
 
-Inline `<script>`/`<style>` require `'unsafe-inline'` in the standalone CSP
-(there is no server to serve separate files). The MV3 extension build uses the
-stricter `'self'`-only policy instead.
+One concession: inline `<script>` and `<style>` need `'unsafe-inline'` in the
+standalone CSP, because there is no server to hand out separate files. The MV3
+extension build uses the stricter `'self'`-only policy, since it can.
