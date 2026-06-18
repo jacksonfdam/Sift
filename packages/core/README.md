@@ -1,61 +1,76 @@
 # @sift/core
 
-The framework-agnostic heart of Sift: the canonical `Flow` model, the parser
-registry, redaction, sanitized export, and the React inspector UI. Both build
-targets (`apps/extension`, `apps/standalone`) consume this package and add only
-a thin mount point.
+The part that does the work. The canonical `Flow` model, the parser registry,
+redaction, sanitized export, and the React inspector. The two build targets
+(`apps/extension`, `apps/standalone`) wrap this and contribute a `createRoot`
+call and not much else.
 
-## The `Flow` spine
+## One model to rule them
 
-Every supported format is a serialization of the same thing — a list of
-request/response flows. There is **one** in-memory model ([`model/flow.ts`](src/model/flow.ts));
-every parser is an adapter that produces `Flow[]`. The UI, search, redaction,
-and export operate only on `Flow` and never learn which format produced it.
+Every supported format is just a serialization of the same idea: a list of
+request/response flows. So there is one in-memory model,
+[`model/flow.ts`](src/model/flow.ts), and every parser is an adapter that
+produces `Flow[]`. The UI, search, redaction, and export only ever see `Flow`.
+They could not tell you which parser fed them, and that is the feature.
 
 ## Parsers
 
-Each parser implements the `FlowParser` contract ([`parsers/types.ts`](src/parsers/types.ts))
-and is registered in [`parsers/registry.ts`](src/parsers/registry.ts). The
-registry sniffs cheaply (extension first, then magic bytes) and dispatches.
+Each parser implements the `FlowParser` contract in
+[`parsers/types.ts`](src/parsers/types.ts) and is registered in
+[`parsers/registry.ts`](src/parsers/registry.ts). The registry sniffs cheaply,
+extension first and then magic bytes, and picks a winner. No full parse just to
+answer "is this mine".
 
-| Parser | Input | Notes |
+| Parser | Reads | Notes |
 | --- | --- | --- |
-| [`har.ts`](src/parsers/har.ts) | `.har` (JSON) | Hub format. Handles base64 bodies, form params, redirect chains, vendor `_`-fields. |
-| [`saz.ts`](src/parsers/saz.ts) | `.saz` (Fiddler ZIP) | Unzips in memory; shared raw-HTTP helper de-chunks + decompresses; detects encrypted archives. |
-| [`charles.ts`](src/parsers/charles.ts) | `.xml` / `.trace` | Schema derived defensively (fields read as attribute *or* element; headers collected by structure). |
+| [`har.ts`](src/parsers/har.ts) | `.har` | The hub format. Base64 bodies, form params, redirect chains, vendor `_`-fields it politely ignores. |
+| [`saz.ts`](src/parsers/saz.ts) | `.saz` | Unzips in memory. De-chunks and decompresses through the shared helper. Detects encrypted archives and refuses them with a reason. |
+| [`charles.ts`](src/parsers/charles.ts) | `.xml`, `.trace` | Schema read defensively, because the Charles XML schema has opinions that change between versions. Fields are attribute or element; headers are collected by shape. |
 
-The raw-HTTP parsing helper ([`util/http-raw.ts`](src/util/http-raw.ts)) is
-shared by SAZ and is the same seam future live capture would reuse.
+The raw HTTP helper, [`util/http-raw.ts`](src/util/http-raw.ts), is shared by
+SAZ and is the exact seam future live capture would reuse. Writing it once was
+not a flourish.
 
-### Body decoding
+## Body decoding
 
 [`util/decode.ts`](src/util/decode.ts) handles `Transfer-Encoding: chunked`
-(de-chunk) and `Content-Encoding: gzip`/`deflate` (via `fflate`). Brotli (`br`)
-cannot be decoded with `fflate`; such bodies are kept as raw bytes and flagged
-with `undecodedEncoding` so the UI shows a "Brotli body — not decoded" badge
-instead of failing.
+(de-chunk first, always) and `Content-Encoding` of `gzip` or `deflate` through
+`fflate`. The ambiguous `deflate` case tries zlib-wrapped, then falls back to
+raw, because the header rarely tells you which. Brotli (`br`) cannot be decoded
+with `fflate`, so those bodies keep their raw bytes and carry an
+`undecodedEncoding` flag the UI turns into a badge. Failing loudly is worse than
+saying "no".
 
-## Redaction & export
+## Redaction and export
 
 [`redaction/policy.ts`](src/redaction/policy.ts) is the single source of truth
-for what counts as sensitive (auth headers, cookies, `Set-Cookie`, API-key
-patterns, token-shaped query params). Both the UI masking and the
-[`export/sanitized-har.ts`](src/export/sanitized-har.ts) consume it, so display
-and export can never drift. Sanitized export is the one output the tool
-produces — only via a user-initiated, in-memory download.
+for what counts as sensitive: auth headers, cookies, `Set-Cookie`, common
+API-key header patterns, and token-shaped query params. Both the UI masking and
+[`export/sanitized-har.ts`](src/export/sanitized-har.ts) import it, so what you
+see hidden and what gets stripped on export cannot drift apart. They are reading
+from the same list, by construction.
+
+Sanitized export rebuilds a valid HAR with sensitive values replaced by
+`[REDACTED]`. It is the only output the tool produces, and only through a
+download you triggered.
 
 ## UI
 
-[`ui/`](src/ui) is a self-contained React inspector: a virtualized flow list, a
-tabbed detail pane (headers/query/cookies/bodies/timing), a dependency-free
-syntax highlighter ([`ui/highlight.ts`](src/ui/highlight.ts)) that emits escaped
-tokens (never HTML), free-text + faceted search ([`ui/search.ts`](src/ui/search.ts)),
-and full-window drag-and-drop.
+[`ui/`](src/ui) is a self-contained React inspector: a virtualized flow list
+with its own small windowing (no extra dependency for the privilege), a tabbed
+detail pane, free text plus faceted search ([`ui/search.ts`](src/ui/search.ts)),
+and full-window drag and drop. The highlighter
+([`ui/highlight.ts`](src/ui/highlight.ts)) is a dependency-free tokenizer that
+emits escaped spans rather than HTML, caps work at 200 KB, and leaves anything
+larger as plain text. The body view itself guards rendering above 512 KB. None
+of this is clever. It just refuses to freeze the tab.
 
 ## Tests
 
-`pnpm test` runs Vitest against real-shaped fixtures per format (HAR, SAZ with
-chunked+gzip bodies, Charles XML and `.trace`), a cross-parser equivalence test,
-redaction/export tests, and a guard test asserting no storage/egress symbols are
-referenced in the source. The SAZ fixture is regenerated by
-[`test/fixtures/saz/generate.mjs`](test/fixtures/saz/generate.mjs).
+`pnpm test` runs Vitest: 44 tests across the parsers (against fixtures shaped
+like real HAR, SAZ with chunked and gzipped bodies, Charles XML and `.trace`), a
+cross-parser test proving HAR and SAZ of the same session normalize to
+equivalent flows, the redaction and export paths, and a guard test that scans
+the source for storage and egress symbols. The SAZ fixture is regenerated by
+[`test/fixtures/saz/generate.mjs`](test/fixtures/saz/generate.mjs), so you can
+see exactly what it claims to be.
