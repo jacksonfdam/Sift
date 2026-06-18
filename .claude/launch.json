@@ -12,6 +12,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "5180", "--directory", "site"],
       "port": 5180
+    },
+    {
+      "name": "vercel-out",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "5181", "--directory", "vercel-out"],
+      "port": 5181
     }
   ]
 }

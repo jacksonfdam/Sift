@@ -7,3 +7,5 @@ coverage/
 *.local
 .idea/
 *.zip
+.vercel
+vercel-out/
