@@ -28,6 +28,50 @@ There is no background service worker holding state, no content script, and no
 storage. Capture state lives in the panel document and dies when you close it.
 An extension with nothing to hide, mostly because it has nothing to keep.
 
+## Packaging it into a zip
+
+The Chrome Web Store wants a zip with `manifest.json` at the root, not your
+`dist` folder wrapped in a bow. So:
+
+```sh
+pnpm zip:extension     # build, then zip dist/ contents to sift-extension-<version>.zip
+```
+
+The zip lands in `apps/extension/` and is git-ignored, because committing build
+output is how repositories gain weight. The packer uses `fflate` `0.8.2` (a dev
+dependency, the same zero-dependency library the SAZ parser already relies on)
+and a fixed timestamp, so packing the same build twice gives byte-identical
+archives. Upload that file by hand at the Web Store developer dashboard, or let
+CI do it.
+
+## Publishing automatically
+
+[`.github/workflows/release-extension.yml`](../../.github/workflows/release-extension.yml)
+builds, runs `pnpm verify` (tests plus the zero-egress check), packs the zip,
+and uploads it as a workflow artifact. Push a tag like `v0.1.0` and it also
+publishes to the Chrome Web Store, using
+[`chrome-webstore-upload-cli`](https://github.com/fregante/chrome-webstore-upload-cli)
+via `npx`. No credentials, no publish: the job just hands you the zip and the
+upload step is skipped.
+
+Publishing needs four repository secrets, which the workflow reads and never
+prints:
+
+| Secret | What it is |
+| --- | --- |
+| `CWS_EXTENSION_ID` | The extension's ID from the developer dashboard. |
+| `CWS_CLIENT_ID` | OAuth client ID for a Google Cloud project with the Chrome Web Store API enabled. |
+| `CWS_CLIENT_SECRET` | OAuth client secret for that client. |
+| `CWS_REFRESH_TOKEN` | A refresh token minted once for that client. |
+
+Getting the OAuth credentials is a one-time slog through a Google Cloud project,
+the Chrome Web Store API, and a consent screen. The official walkthrough is
+Chrome's "Using the Web Store Publish API" guide
+(<https://developer.chrome.com/docs/webstore/using-api>), and the CLI's README
+covers minting the refresh token. The first upload of a brand-new extension must
+be done manually in the dashboard; the API can only update an item that already
+exists.
+
 ## The v2 you will ask about
 
 Live capture is not here. When it arrives it will plug into the same `Flow`
