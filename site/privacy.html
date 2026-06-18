@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sift — privacy policy</title>
+    <meta name="description" content="Sift collects no data. Everything runs locally in your browser." />
+    <link rel="icon" href="assets/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark"></span> Sift</a>
+        <nav>
+          <a href="index.html">Overview</a>
+          <a href="docs.html">Docs</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="doc wrap legal">
+      <h1>Privacy policy</h1>
+      <p class="updated">Last updated: June 18, 2026</p>
+
+      <p>Sift is a read-only viewer for HTTP capture files (HAR, Fiddler SAZ, and Charles). This policy describes what data the software handles. The short version: it handles your capture files locally and collects nothing.</p>
+
+      <h2>Single purpose</h2>
+      <p>Sift opens HTTP capture files and displays them in a read-only, in-memory inspector. That is its only function. It does not capture, proxy, intercept, or modify network traffic.</p>
+
+      <h2>Data we collect</h2>
+      <p>None. Sift does not collect, store, transmit, share, or sell any personal data, usage data, or capture contents. There is no account, no sign-in, and no server operated by this project that your data reaches.</p>
+
+      <h2>How your files are handled</h2>
+      <ul>
+        <li>Capture files you open are read into memory, parsed, and rendered in the page.</li>
+        <li>The data is discarded when the panel or page is hidden, closed, or reloaded. It does not persist across reloads.</li>
+        <li>No browser storage is used: no <code>localStorage</code>, no <code>sessionStorage</code>, no <code>chrome.storage</code>, no <code>IndexedDB</code>, and no Cache API.</li>
+        <li>The only file Sift can produce is a sanitized HAR export, which is a download you explicitly start. It is created in memory and never written or sent automatically.</li>
+      </ul>
+
+      <h2>Network access</h2>
+      <p>Sift makes no outbound network requests of any kind. There is no telemetry, no analytics, no error reporting, and no remote configuration. Its pages declare a content security policy with <code>connect-src 'none'</code>, so the browser blocks network connections from the extension.</p>
+
+      <h2>Permissions</h2>
+      <p>The extension requests no <code>permissions</code> and no <code>host_permissions</code>. The only manifest entry that integrates with the browser is <code>devtools_page</code>, which is required to register the DevTools panel and grants no access to page content, tabs, or network data. Because Sift has no host permissions, it cannot read your browsing or the pages you visit.</p>
+
+      <h2>Remote code</h2>
+      <p>No remote or dynamically loaded code is executed. All code ships inside the package, and the content security policy permits only first-party scripts and forbids <code>eval</code>.</p>
+
+      <h2>Children</h2>
+      <p>Sift is a developer tool that collects no data from anyone, including children.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>If this policy changes, the updated date above will change with it. Because Sift collects nothing, material changes would only ever arise from a change in the software itself, which is open source and auditable.</p>
+
+      <h2>Contact</h2>
+      <p>Sift collects no data, so there is nothing to request, correct, or delete. Questions about the software, including its privacy behavior, can be raised through the project's source repository.</p>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark"></span> Sift</a>
+        <nav>
+          <a href="index.html">Overview</a>
+          <a href="docs.html">Docs</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
